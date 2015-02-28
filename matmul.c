@@ -13,12 +13,16 @@ void initMat1(){
 		}
 	}
 }
-
+int x=0;
 void initMat2(){
 	int i,j;
 	for (i=0; i<N; i++){
 		for(j=0; j< N; j++){
 			b[i][j] = (i - j + 64)%6 + (i * j)% 8;
+			if (b[i][j]<0)
+			{
+				x=1;
+			}
 		}
 	}
 }
@@ -46,11 +50,33 @@ int matSum(){
 }
 
 void main(){
+
 	initMat1();
 	initMat2();
+	for (int i = 0; i < N; ++i)
+	{
+		for (int j = 0; j < N; ++j)
+		{
+			printf("%d ",a[i][j]);
+		}
+		printf("\n");
+	}
+	printf("\n");
+	for (int i = 0; i < N; ++i)
+	{
+		for (int j = 0; j < N; ++j)
+		{
+			printf("%d ",b[i][j]);
+		}
+		printf("\n");
+		
+	}
+	printf("\n");
 	matMul();
 	int val = matSum();
 	printf("Sum is %d\n",val);
+		printf("BOOL=%d\n",x );
+
 }
 
 

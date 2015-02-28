@@ -3,13 +3,16 @@
 #include <stdlib.h>
 
 // reg will contain the value of the sixteen registers r0 - r15
-int reg[16];
+long int reg[16];
 
 // flags contains flags(E) and flags(GT)
 int flags[2];
 
 // Data Memory of 4096 bytes
 int Mem[1024];
+
+// global memory
+int globalMem[49152];
 
 // rd stores destination register, rs1 and rs2 store the source registers and imm is the immediate
 int rd, rs1, rs2, imm;
@@ -95,7 +98,7 @@ void initMat1(){
     for (i=0; i<reg[0]; i++){
         for(j=0; j< reg[0]; j++){
 //            a[i][j] = (i + j)%17 ;
-            Mem[reg[0]*i+j]=(i + j)%17;
+            globalMem[reg[0]*i+j]=(i + j)%17;
 //            printf("Mem[%d][%d]=%d ",i,j,Mem[reg[0]*i+j]);
 
         }
@@ -110,7 +113,7 @@ void initMat2(){
         for(j=0; j< reg[0]; j++)
         {
 //            b[i][j] = (i - j + 64)%6 + (i * j)% 8;
-            Mem[reg[0]*reg[0]+reg[0]*j+i]=(i - j + 64)%6 + (i * j)% 8;
+            globalMem[reg[0]*reg[0]+reg[0]*j+i]=(i - j + 64)%6 + (i * j)% 8;
 //            printf("Mem[%d][%d]=%d ",i,j,Mem[reg[0]*reg[0]+reg[0]*j+i]);
 
         }
@@ -123,7 +126,6 @@ int main(int argc, char* argv[])
 {
 
     reg[0]=atoi(argv[2]);
-    printf("reg=%d\n",reg[0]);
     k = 1;
     initMat1();
     initMat2();
@@ -144,14 +146,7 @@ int main(int argc, char* argv[])
 	}
 	size = size + 2;			// We add 2 to accomodate for an extra '\n' and a '\0'
 	
-    for ( int i=0;i<48; i++)
-    {
-        printf("%d",Mem[i]);
-        if ((i+1)%4==0)
-        {
-            printf("\n");
-        }
-    }
+
     
 	// Code for storing the whole program into the string str
 	str = malloc(size*(sizeof(char)));
@@ -457,7 +452,7 @@ void executeInstruction(void)
 						printf("Cannot access a memory location which is not a multiple of 4 !!!\n");
 						invalidInst();
 					}
-					Mem[(reg[rs1]+imm)/4] = reg[rd];
+					globalMem[(reg[rs1]+imm)/4] = reg[rd];
 				}
 
 
@@ -1030,7 +1025,7 @@ void executeInstruction(void)
 						printf("Cannot access a memory location which is not a multiple of 4 !!!\n");
 						invalidInst();
 					}
-					reg[rd] = Mem[(reg[rs1]+imm)/4];
+					reg[rd] = globalMem[(reg[rs1]+imm)/4];
 				}
 
 				else
@@ -1135,7 +1130,7 @@ void executeInstruction(void)
 						}
 						if(rd < 0 || rd > 15)
 							invalidInst();
-						printf("r%-2d: %d\n",rd, reg[rd]);
+						printf("%d\n",reg[rd]);
 						while(inst[i] == ' ' || inst[i] == '\t')
 							i++;
 						if(inst[i] != ',')
